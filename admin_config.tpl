@@ -213,7 +213,7 @@ jQuery(document).ready(function() {
 {/literal}{/footer_script}
 
 <div class="titrePage">
-  <h2>{'Configuration'|@translate} - {'Community'|@translate}</h2>
+  <h2>{'Configuration'|@translate} - {'Photo from Email'|@translate}</h2>
 </div>
 
 <p style="text-align:left; margin:0 1em;">

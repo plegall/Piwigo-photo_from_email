@@ -30,8 +30,6 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 include_once(PHPWG_ROOT_PATH.'include/functions_picture.inc.php');
 load_language('plugin.lang', PFEMAIL_PATH);
 
-$admin_base_url = get_root_url().'admin.php?page=plugin-community-config';
-
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
