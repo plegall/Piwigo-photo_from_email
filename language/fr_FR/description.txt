@@ -1,1 +1,1 @@
-Permet aux utilisateurs d'ajouter des photos sans être administrateur
+Récupère des emails et ajoute dans Piwigo les photos jointes
