@@ -135,7 +135,8 @@ SELECT
     // let's notify administrators
     $query = '
 SELECT id
-  FROM '.GROUPS_TABLE.'
+  FROM '.GROUPS_TABLE.' 
+  WHERE pfemail_notify = "true"
 ;';
     $group_ids = query2array($query, null, 'id');
 
