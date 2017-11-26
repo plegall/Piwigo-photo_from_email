@@ -38,7 +38,11 @@ function pfemail_check_accounts()
 
   $image_ids = array();
 
-  $query = 'SELECT * FROM '.PFEMAIL_MAILBOXES_TABLE.';';
+  $query = '
+SELECT
+    *
+  FROM '.PFEMAIL_MAILBOXES_TABLE.'
+;';
   $accounts = query2array($query);
   
   foreach ($accounts as $account)
@@ -129,7 +133,11 @@ function pfemail_check_accounts()
     invalidate_user_cache();
 
     // let's notify administrators
-    $query = 'SELECT id FROM '.GROUPS_TABLE.' WHERE pfemail_notify = "true";';
+    $query = '
+SELECT id
+  FROM '.GROUPS_TABLE.' 
+  WHERE pfemail_notify = "true"
+;';
     $group_ids = query2array($query, null, 'id');
 
     if (count($group_ids) > 0)
@@ -144,7 +152,13 @@ function pfemail_check_accounts()
       $previous_derivative_url_style = $conf['derivative_url_style'];
       $conf['derivative_url_style'] = 2;
 
-      $query = 'SELECT id, path FROM '.IMAGES_TABLE.' WHERE id IN ('.implode(',', $image_ids).');';
+      $query = '
+SELECT
+    id,
+    path
+  FROM '.IMAGES_TABLE.'
+  WHERE id IN ('.implode(',', $image_ids).')
+;';
       $result = pwg_query($query);
       while ($row = pwg_db_fetch_assoc($result))
       {
@@ -242,6 +256,51 @@ function pfemail_validate($id)
 
   invalidate_user_cache();
 
+  // notify users
+/*
+  $query = '
+SELECT
+    from
+  FROM '.PFEMAIL_PENDINGS_TABLE.'
+  WHERE image_id = '.$id.'
+;';
+  list($to) = pwg_db_fetch_row(pwg_query($query));
+    
+  if (empty($to))
+  {
+    return;
+  }
+
+  $headers = 'From: '.get_webmaster_mail_address()."\n";
+  $headers.= 'X-Mailer: Piwigo Mailer'."\n";
+    
+  $headers.= "MIME-Version: 1.0\n";
+  $headers.= "Content-type: text/plain; charset=utf-8\n";
+  $headers.= "Content-Transfer-Encoding: quoted-printable\n";
+  
+  set_make_full_url();
+  
+  $message = 'Hi,
+
+Your photo was added to the Piwigo Showcase,
+see it on '.make_picture_url(array('image_id' => $id)).'
+
+Have a great day!
+
+--
+Piwigo Team
+http://piwigo.org';
+    
+  mail(
+    $to,
+    '[Piwigo Showcase] your gallery '.showcase_admin_get_simplified_url($url, true).' was successfully added',
+    $message,
+    $headers
+    );
+    
+  unset_make_full_url();
+*/
+  
   return true;
 }
 
@@ -249,7 +308,11 @@ function pfemail_reject($id)
 {
   global $conf, $page;
 
-  $query = ' DELETE FROM '.PFEMAIL_PENDINGS_TABLE.' WHERE image_id = '.$id.';';
+  $query = '
+DELETE
+  FROM '.PFEMAIL_PENDINGS_TABLE.'
+  WHERE image_id = '.$id.'
+;';
   pwg_query($query);
   
   delete_elements(array($id), true);
@@ -265,7 +328,13 @@ function pfemail_get_pending_ids()
 {
   global $conf;
   
-  $query = 'SELECT image_id FROM '.PFEMAIL_PENDINGS_TABLE.' JOIN '.IMAGES_TABLE.' ON image_id = id WHERE state = \'moderation_pending\';';
+  $query = '
+SELECT
+    image_id
+  FROM '.PFEMAIL_PENDINGS_TABLE.'
+    JOIN '.IMAGES_TABLE.' ON image_id = id
+  WHERE state = \'moderation_pending\'
+;';
   $ids = query2array($query, null, 'image_id');
 
   return $ids;
@@ -322,7 +391,11 @@ function ws_pfemail_mailbox_save($params, &$service)
   if (isset($params['id']) and !empty($params['id']))
   {
     // we are edition mode
-    $query = 'SELECT * FROM '.PFEMAIL_MAILBOXES_TABLE.' WHERE id = '.$params['id'].';';
+    $query = '
+SELECT *
+  FROM '.PFEMAIL_MAILBOXES_TABLE.'
+  WHERE id = '.$params['id'].'
+;';
     $mailboxes = query2array($query, 'id');
 
     if (!isset($mailboxes[ $params['id'] ]))
@@ -362,7 +435,11 @@ function ws_pfemail_mailbox_save($params, &$service)
 
 function ws_pfemail_mailbox_delete($params, &$service)
 {
-  $query = 'SELECT * FROM '.PFEMAIL_MAILBOXES_TABLE.' WHERE id = '.$params['id'].';';
+  $query = '
+SELECT *
+  FROM '.PFEMAIL_MAILBOXES_TABLE.'
+  WHERE id = '.$params['id'].'
+;';
   $mailboxes = query2array($query, 'id');
 
   if (!isset($mailboxes[ $params['id'] ]))
@@ -370,7 +447,11 @@ function ws_pfemail_mailbox_delete($params, &$service)
     return new PwgError(404, 'id not found');
   }
 
-  $query = 'DELETE FROM '.PFEMAIL_MAILBOXES_TABLE.' WHERE id = '.$params['id'].';';
+  $query = '
+DELETE
+  FROM '.PFEMAIL_MAILBOXES_TABLE.'
+  WHERE id = '.$params['id'].'
+;';
   pwg_query($query);
 
   return array('id' => $params['id']);
