@@ -6,6 +6,7 @@ Description: Fetch emails and add attached/embedded photos
 Plugin URI: http://piwigo.org/ext/extension_view.php?eid=
 Author: plg
 Author URI: http://le-gall.net/pierrick
+Has Settings: true
 */
 
 if (!defined('PHPWG_ROOT_PATH'))
@@ -42,8 +43,8 @@ function pfemail_init()
   // $conf['pfemail'] = safe_unserialize($conf['pfemail']);
 }
 
-add_event_handler('get_admin_plugin_menu_links', 'pfemail_admin_menu');
-function pfemail_admin_menu($menu)
+add_event_handler('loc_begin_admin_page', 'pfemail_loc_begin_admin_page');
+function pfemail_loc_begin_admin_page()
 {
   global $page;
 
@@ -56,28 +57,23 @@ SELECT
 ;';
   $result = pwg_query($query);
   list($page['pfemail_nb_pendings']) = pwg_db_fetch_row($result);
+}
 
-  $name = 'Photo from Email';
+add_event_handler('loc_end_intro', 'pfemail_loc_end_intro');
+function pfemail_loc_end_intro()
+{
+  global $page;
+
   if ($page['pfemail_nb_pendings'] > 0)
   {
-    $style = 'background-color:#666;';
-    $style.= 'color:white;';
-    $style.= 'padding:1px 5px;';
-    $style.= 'border-radius:10px;';
-    $style.= 'margin-left:5px;';
-
-    $name.= '<span style="'.$style.'">'.$page['pfemail_nb_pendings'].'</span>';
-  }
-
-  array_push(
-    $menu,
-    array(
-      'NAME' => $name,
-      'URL'  => get_root_url().'admin.php?page=plugin-photo_from_email'
-      )
+    $message = sprintf(
+      'Photo from Email <i class="icon-picture"></i> <a href="%s">'.l10n('%u pending photos').' <i class="icon-right"></i></a>',
+      get_root_url().'admin.php?page=plugin-photo_from_email-pendings',
+      $page['pfemail_nb_pendings']
     );
-
-  return $menu;
+  
+    $page['messages'][] = $message;
+  }
 }
 
 add_event_handler('loc_end_page_tail', 'pfemail_call_check');
